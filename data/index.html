@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 WiFi Deauther</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ESP32 WiFi Killer</h1>
+            <p class="subtitle">@Dr.ngominhtu</p>
+        </header>
+        
+        <div class="controls">
+            <button id="scanBtn" onclick="scanNetworks()">
+                <span>🔍</span> Scan Networks
+            </button>
+            <button id="refreshBtn" onclick="getNetworks()">
+                <span>🔄</span> Refresh
+            </button>
+        </div>
+        
+        <div class="status" id="status">Ready to scan...</div>
+        
+        <div class="networks-container">
+            <h2>Detected Networks</h2>
+            <div id="networks">
+                <div class="no-networks">No networks found. Click "Scan Networks" to start.</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/script.js"></script>
+</body>
+</html>
