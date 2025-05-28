@@ -24,6 +24,10 @@ void startWebServer(WebServer& server) {
   server.on("/networks", handleNetworks);
   server.on("/deauth", HTTP_POST, handleDeauth);
   
+  // ✅ THÊM: Continuous jamming control routes
+  server.on("/stop", handleStopJamming);
+  server.on("/status", handleJammingStatus);
+  
   server.begin();
   Serial.println("Web server started on port 80");
 }
@@ -85,9 +89,15 @@ void handleNetworks() {
 
 void handleDeauth() {
   String body = webServer->arg("plain");
-  Serial.println("Deauth request: " + body);
+  Serial.println("Jamming request: " + body);
   
-  // Parse JSON manually (không cần ArduinoJson)
+  // Check if already jamming
+  if (isCurrentlyJamming()) {
+    webServer->send(409, "text/plain", "Already jamming! Stop current attack first.");
+    return;
+  }
+  
+  // Parse JSON manually
   String ssid = "";
   int index = -1;
   
@@ -109,9 +119,35 @@ void handleDeauth() {
   Serial.printf("Parsed - SSID: %s, Index: %d\n", ssid.c_str(), index);
   
   if (ssid.length() > 0 && index >= 0) {
+    webServer->send(200, "text/plain", "Continuous jamming started on: " + ssid + " (Use /stop to end)");
+    
+    // Start jamming (runs in background)
     sendDeauthPacket(ssid, index);
-    webServer->send(200, "text/plain", "Deauth attack sent to: " + ssid);
   } else {
     webServer->send(400, "text/plain", "Invalid SSID or Index");
   }
+}
+
+// ✅ THÊM: Stop jamming endpoint
+void handleStopJamming() {
+  if (isCurrentlyJamming()) {
+    stopJammingAttack();
+    webServer->send(200, "text/plain", "Jamming stopped successfully");
+    Serial.println("🛑 Jamming stopped via web interface");
+  } else {
+    webServer->send(200, "text/plain", "No active jamming to stop");
+  }
+}
+
+// ✅ THÊM: Status endpoint
+void handleJammingStatus() {
+  String status = getJammingStatus();
+  bool active = isCurrentlyJamming();
+  
+  String json = "{";
+  json += "\"active\":" + String(active ? "true" : "false") + ",";
+  json += "\"status\":\"" + status + "\"";
+  json += "}";
+  
+  webServer->send(200, "application/json", json);
 }

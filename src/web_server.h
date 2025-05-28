@@ -11,4 +11,8 @@ void handleScan();
 void handleNetworks();
 void handleDeauth();
 
+// ✅ THÊM: Khai báo các hàm mới
+void handleStopJamming();
+void handleJammingStatus();
+
 #endif

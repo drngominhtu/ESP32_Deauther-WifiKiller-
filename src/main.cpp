@@ -3,7 +3,7 @@
 #include <WebServer.h>
 #include <esp_wifi.h>
 #include "wifi_manager.h"
-#include "web_server.h"
+#include "web_server.h"  // ✅ Đảm bảo include này có
 
 // Khai báo WebServer như một biến global
 WebServer server(80);
@@ -70,5 +70,15 @@ void setup() {
 
 void loop() {
   server.handleClient();
-  delay(10); // Thêm delay nhỏ để tránh watchdog reset
+  
+  // ✅ THÊM: Status update cho continuous jamming
+  static unsigned long lastStatusUpdate = 0;
+  if (millis() - lastStatusUpdate > 10000) { // Mỗi 10 giây
+    if (isCurrentlyJamming()) {
+      Serial.println("📊 Status: " + getJammingStatus());
+    }
+    lastStatusUpdate = millis();
+  }
+  
+  delay(10);
 }

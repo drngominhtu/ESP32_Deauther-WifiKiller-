@@ -11,8 +11,14 @@ String getNetworkSSID(int index);
 int getNetworkRSSI(int index);
 int getNetworkEncryption(int index);
 void sendDeauthPacket(String targetSSID, int targetIndex);
-void restoreAP(); // Thêm hàm restore
 
-extern int currentChannel; // Biến global cho channel
+// ✅ THÊM: Continuous jamming control functions
+bool isCurrentlyJamming();
+String getJammingStatus();
+void stopJammingAttack();
+
+// Khai báo hàm từ main.cpp
+extern void setupStealth();
+extern int currentChannel;
 
 #endif
